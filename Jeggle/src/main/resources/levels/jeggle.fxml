@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import framework.nodes.PhysicsRectangle?>
+<?import framework.nodes.PhysicsWorld?>
+<?import javafx.scene.layout.StackPane?>
+
+<StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.controller.JeggleController">
+   <children>
+      <PhysicsWorld fx:id="world" gravityY="10.0" onBeginCollision="#handleCollision" onPhysicsStep="#handlePhysicsStep" physicsScale="1.0">
+         <children>
+            <PhysicsRectangle fx:id="sensor" cache="true" fill="#cafff8" friction="0" height="30.0" layoutX="10.0" layoutY="440.0" sensor="true" simulationType="NonMovable" width="620" />
+            <PhysicsRectangle fx:id="wallLeft" cache="true" fill="black" friction="0" height="480" simulationType="NonMovable" width="10" />
+            <PhysicsRectangle fx:id="wallRight" cache="true" fill="black" friction="0" height="480" layoutX="630.0" simulationType="NonMovable" width="10" />
+            <PhysicsRectangle fx:id="roof" cache="true" fill="black" friction="0" height="10" layoutX="10.0" simulationType="NonMovable" width="620" />
+            <PhysicsRectangle fx:id="floor" cache="true" fill="black" friction="0" height="10" layoutX="10.0" layoutY="470.0" simulationType="NonMovable" width="620" />
+         </children>
+      </PhysicsWorld>
+   </children>
+</StackPane>
