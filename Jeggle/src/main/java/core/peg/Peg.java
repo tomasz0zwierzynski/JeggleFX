@@ -1,8 +1,9 @@
-package main.core.peg;
+package main.java.core.peg;
 
 import framework.nodes.PhysicsCircle;
+import javafx.scene.paint.Color;
 
-public class Peg {
+public class Peg extends PhysicsCircle {
 
     public enum Cycle {
         CREATED,
@@ -18,26 +19,46 @@ public class Peg {
         PINK
     }
 
-    private PhysicsCircle model;
+    // private PhysicsPeg model;
     private boolean visible = false;
     private Type type = Type.BLUE;
     private Cycle cycle = Cycle.CREATED;
 
-    private Peg(PhysicsCircle model) {
-        this.model = model;
+//    public Peg(PhysicsPeg model) {
+//        this.model = model;
+//    }
+
+//    public PhysicsPeg getModel() {
+//        return model;
+//    }
+
+//    public void relocate(double posX, double posY) {
+//        model.setLayoutX(posX);
+//        model.setLayoutY(posY);
+//    }
+
+    public void show() {
+        setVisible(true);
+
+        cycle = Cycle.SHOWN;
     }
 
-    public void show(double posX, double posY) {
-        model.setLayoutX(posX);
-        model.setLayoutY(posY);
+    public void hide() {
+        setVisible(false);
+
+        cycle = Cycle.HIDDEN;
     }
 
-    public boolean isVisible() {
-        return visible;
-    }
+//    public boolean isVisible() {
+//        return visible;
+//    }
+//
+//    public void setVisible(boolean visible) {
+//        this.visible = visible;
+//    }
 
-    public void setVisible(boolean visible) {
-        this.visible = visible;
+    public Cycle getCycle() {
+        return cycle;
     }
 
     public Type getType() {
@@ -46,5 +67,40 @@ public class Peg {
 
     public void setType(Type type) {
         this.type = type;
+
+        switch(type) {
+            case BLUE:
+                setFill(Color.DARKBLUE);
+                break;
+            case ORANGE:
+                setFill(Color.CORAL);
+                break;
+            case GREEN:
+                setFill(Color.DARKGREEN);
+                break;
+            case PINK:
+                setFill(Color.DEEPPINK);
+                break;
+        }
+    }
+
+    public void highlight() {
+        if (cycle == Cycle.SHOWN) {
+            cycle = Cycle.HIGHLIGHTED;
+            switch(type) {
+                case BLUE:
+                    setFill(Color.CORNFLOWERBLUE);
+                    break;
+                case ORANGE:
+                    setFill(Color.LIGHTCORAL);
+                    break;
+                case GREEN:
+                    setFill(Color.LAWNGREEN);
+                    break;
+                case PINK:
+                    setFill(Color.PINK);
+                    break;
+            }
+        }
     }
 }

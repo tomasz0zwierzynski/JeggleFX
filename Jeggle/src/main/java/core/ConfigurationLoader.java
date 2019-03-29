@@ -1,4 +1,4 @@
-package main.core;
+package main.java.core;
 
 public class ConfigurationLoader {
 
@@ -15,5 +15,8 @@ public class ConfigurationLoader {
     public static final double linearDamping = 0.0;
     public static final double density = 10.0;
     public static final double gravityScale = 80.0;
+
+    public static final double initialVelocity = 10.0;
+
 
 }

@@ -1,8 +1,11 @@
 package main.java.core;
 
 import framework.PhysicsGame;
+import javafx.application.Platform;
 import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class GameManager {
@@ -26,12 +29,23 @@ public class GameManager {
     public void initializeGame(Stage primaryStage) {
         stage = primaryStage;
         stage.setTitle("Jeggle");
+
+        VBox vBox = new VBox();
+        vBox.getChildren().add(new Label("Loading..."));
+        Scene loadingScene = new Scene(vBox);
+        stage.setScene(loadingScene);
+        stage.setTitle("Loading...");
+        Platform.runLater(()->{
+            stage.show();
+        });
     }
 
     public void showStage(Scene scene) {
         if (stage != null) {
-            stage.setScene(scene);
-            stage.show();
+            Platform.runLater(()->{
+                stage.setScene(scene);
+                stage.show();
+            });
         }
     }
 
@@ -40,20 +54,28 @@ public class GameManager {
     }
 
     public void createGame() {
-        physicsGame = new PhysicsGame();
+        Platform.runLater(()->{
+            physicsGame = new PhysicsGame();
+        });
     }
 
     public void startGame() {
-        physicsGame.load(region);
-        physicsGame.startGame();
+        Platform.runLater(()->{
+            physicsGame.load(region);
+            physicsGame.startGame();
+        });
     }
 
     public void pauseGame() {
-        physicsGame.pauseGame();
+        Platform.runLater(()->{
+            physicsGame.pauseGame();
+        });
     }
 
     public void stopGame() {
-        physicsGame.stopGame();
+        Platform.runLater(()->{
+            physicsGame.stopGame();
+        });
     }
     // public void
 

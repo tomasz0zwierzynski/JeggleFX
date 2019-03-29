@@ -1,7 +1,8 @@
-package main.core.level;
+package main.java.core.level;
 
 import framework.SimulationType;
 import framework.nodes.PhysicsCircle;
+import javafx.geometry.Point2D;
 import javafx.scene.CacheHint;
 import javafx.scene.paint.Color;
 
@@ -11,6 +12,26 @@ import java.util.stream.IntStream;
 
 public class Level {
 
+    public static List<Point2D> getLevel1Layout() {
+        List<Point2D> result = new ArrayList<>();
+
+        IntStream.range(0,11).forEach(i -> {
+            result.add(new Point2D((i + 1) * 50, 300) );
+        });
+        IntStream.range(0,11).forEach(i -> {
+            result.add(new Point2D((i + 1) * 50 + 25, 240) );
+        });
+        IntStream.range(0,11).forEach(i -> {
+            result.add(new Point2D((i + 1) * 50, 180) );
+        });
+        IntStream.range(0,11).forEach(i -> {
+            result.add(new Point2D((i + 1) * 50 + 25, 120) );
+        });
+
+        return result;
+    }
+
+    @Deprecated
     public static List<PhysicsCircle> getPegs() {
         List<PhysicsCircle> pegs = new ArrayList<>();
 

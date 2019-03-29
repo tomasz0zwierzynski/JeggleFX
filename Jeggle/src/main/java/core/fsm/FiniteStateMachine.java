@@ -13,13 +13,15 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URL;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.concurrent.LinkedBlockingQueue;
 
 public class FiniteStateMachine implements StateMachine {
-    private static final Logger LOG = LogManager.getLogger( FiniteStateMachine.class );
+    private static final Logger LOG = LogManager.getLogger(FiniteStateMachine.class);
 
 
-    private Map<String, Class<?>>  states = new HashMap<>();
+    private Map<String, Class<?>> states = new HashMap<>();
 
     private Map<String, Pair<String, String>> eventTransition = new HashMap<>();
 
@@ -28,28 +30,42 @@ public class FiniteStateMachine implements StateMachine {
 
     private boolean cached = true;
 
+    private String statesPackageName;
+
     private final Queue<String> transitionsQueue = new LinkedBlockingQueue<>();
+
+    private ExecutorService executorService;
 
     public FiniteStateMachine(String statesPackageName) {
 
-        try {
-            List<Class> allClasses = Arrays.asList(getClasses(statesPackageName));
-            allClasses.forEach(clazz -> {
-                if (clazz.isAnnotationPresent(State.class)) {
-                    addState(clazz);
-                }
-            });
-        } catch (ClassNotFoundException | IOException e) {
-            throw new ConfigurationException("Error while loading all classes from package: " + statesPackageName);
-        }
+        this.statesPackageName = statesPackageName;
 
-        String initialStateName = states.values().stream()
-                .filter(clazz -> clazz.getAnnotation(State.class).initial())
-                .findFirst()
-                .orElseThrow( () -> new AnnotationException("At least one class should be marked as initial in State annotation"))
-                .getAnnotation(State.class).value();
+        this.executorService = Executors.newSingleThreadExecutor();
+    }
 
-        initialize(initialStateName);
+    public void init() {
+        executorService.execute(() -> {
+
+
+            try {
+                List<Class> allClasses = Arrays.asList(getClasses(statesPackageName));
+                allClasses.forEach(clazz -> {
+                    if (clazz.isAnnotationPresent(State.class)) {
+                        addState(clazz);
+                    }
+                });
+            } catch (ClassNotFoundException | IOException e) {
+                throw new ConfigurationException("Error while loading all classes from package: " + statesPackageName);
+            }
+
+            String initialStateName = states.values().stream()
+                    .filter(clazz -> clazz.getAnnotation(State.class).initial())
+                    .findFirst()
+                    .orElseThrow(() -> new AnnotationException("At least one class should be marked as initial in State annotation"))
+                    .getAnnotation(State.class).value();
+
+            initialize(initialStateName);
+        });
     }
 
     private synchronized void initialize(String state) {
@@ -121,8 +137,10 @@ public class FiniteStateMachine implements StateMachine {
 
     public void triggerEvent(String event) {
         LOG.debug("Triggering event: " + event);
-        transitionsQueue.offer(event);
-        checkTransitionQueue();
+        executorService.execute(()->{
+            transitionsQueue.offer(event);
+            checkTransitionQueue();
+        });
     }
 
     private void checkTransitionQueue() {
@@ -132,18 +150,20 @@ public class FiniteStateMachine implements StateMachine {
         }
     }
 
-    private synchronized void performTransition(String event) {
+    private void performTransition(String event) {
         if (eventTransition.containsKey(event)) {
-            if (eventTransition.get(event).getKey().equals(currentStateName) ) {
+            if (eventTransition.get(event).getKey().equals(currentStateName)) {
 
                 Method[] currentStateMethods = currentState.getClass().getMethods();
                 for (Method method : currentStateMethods) {
                     OnExit exitMethod = method.getAnnotation(OnExit.class);
                     if (exitMethod != null) {
                         try {
+                            LOG.debug("State: " + currentStateName + "Invoke OnExit " + method.getName() + " method");
                             method.invoke(currentState);
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new AnnotationException("OnExit method is not public!");
+                            LOG.error("Throwable thrown while executing @OnExit method", e);
+                            // throw new AnnotationException("Exception while invoking method!");
                         }
                     }
                 }
@@ -165,7 +185,7 @@ public class FiniteStateMachine implements StateMachine {
                     }
                 }
 
-                currentStateName =  eventTransition.get(event).getValue();
+                currentStateName = eventTransition.get(event).getValue();
 
                 Class clazz = states.get(currentStateName);
                 try {
@@ -184,9 +204,10 @@ public class FiniteStateMachine implements StateMachine {
                     OnEntry exitMethod = method.getAnnotation(OnEntry.class);
                     if (exitMethod != null) {
                         try {
+                            LOG.debug("State: " + currentStateName + "Invoke OnEntry " + method.getName() + " method");
                             method.invoke(currentState);
                         } catch (IllegalAccessException | InvocationTargetException e) {
-                            throw new AnnotationException("OnExit method is not public!");
+                            LOG.error("Throwable thrown while executing @OnEntry method", e);
                         }
                     }
                 }

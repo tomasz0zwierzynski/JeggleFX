@@ -1,8 +1,11 @@
 package main.java.core.state;
 
+import javafx.scene.Node;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
-import main.java.controller.JeggleController;
+import main.java.controller.BallotronController;
+import main.java.controller.LevelController;
 import main.java.controller.UiController;
 import main.java.core.GameManager;
 import main.java.core.fsm.StateContext;
@@ -11,6 +14,8 @@ import main.java.core.fsm.annotation.OnEntry;
 import main.java.core.fsm.annotation.OnExit;
 import main.java.core.fsm.annotation.State;
 import main.java.core.fsm.annotation.TransitionSource;
+import main.java.core.level.Level;
+import main.java.core.level.LevelBuilder;
 import main.java.core.loader.FxmlLoader;
 import main.java.core.util.Path;
 import main.java.core.util.ViewController;
@@ -19,27 +24,34 @@ import org.apache.logging.log4j.Logger;
 
 @State(value = "init", initial = true)
 @TransitionSource(target = "aim", event = "aimEvent")
-public class InitialState extends AbstractState {
-    private static final Logger LOG = LogManager.getLogger( InitialState.class );
+public class LevelInitState extends AbstractState {
+    private static final Logger LOG = LogManager.getLogger( LevelInitState.class );
 
-    public InitialState(StateMachine machine, StateContext context) {
+    public LevelInitState(StateMachine machine, StateContext context) {
         super(machine, context);
     }
 
     @OnEntry
-    public void initialize() {
-        LOG.debug("initState: initialize()");
+    public void onEntry() {
 
         LOG.debug("Loading gui viewController");
         ViewController<Region, UiController> ui = FxmlLoader.loadViewController(Region.class, UiController.class, Path.Ui.UI);
 
-        context.put("Ui", ui);
+        context.put(StateContext.UI_CONTEXT_KEY, ui);
 
+        ViewController<Region, LevelController> level = FxmlLoader.loadViewController(Region.class, LevelController.class, Path.Level.LEVEL);
 
-        ViewController<Region, JeggleController> level = FxmlLoader.loadViewController(Region.class, JeggleController.class, Path.Level.JEGGLE);
+        level.getController().initializeLevel( LevelBuilder.build( Level.getLevel1Layout() ) );
+
+        level.getController().prepareOrangePegs();
+
+        ViewController<Parent, BallotronController> ballotron = FxmlLoader.loadViewController(Parent.class, BallotronController.class, Path.Ui.BALLOTRON);
+        context.put(StateContext.BALLOTRON_CONTEXT_KEY, ballotron);
+
         ui.getController().setLevel(level.getView());
+        ui.getController().setBallotron(ballotron.getView());
 
-        context.put("Level", level);
+        context.put(StateContext.LEVEL_CONTEXT_KEY, level);
 
         GameManager.getInstance().showStage(new Scene(ui.getView()));
 
@@ -49,13 +61,20 @@ public class InitialState extends AbstractState {
 
         GameManager.getInstance().startGame();
 
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        level.getController().showPegs();
+
         LOG.debug("Sending event to aim state");
         machine.triggerEvent("aimEvent");
     }
 
     @OnExit
-    public void clean() {
-        LOG.debug("initState: clean()");
+    public void onExit() {
 
     }
 }

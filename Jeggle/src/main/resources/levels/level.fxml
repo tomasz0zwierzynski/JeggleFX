@@ -4,7 +4,7 @@
 <?import framework.nodes.PhysicsWorld?>
 <?import javafx.scene.layout.StackPane?>
 
-<StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.controller.JeggleController">
+<StackPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.controller.LevelController">
    <children>
       <PhysicsWorld fx:id="world" gravityY="10.0" onBeginCollision="#handleCollision" onPhysicsStep="#handlePhysicsStep" physicsScale="1.0">
          <children>

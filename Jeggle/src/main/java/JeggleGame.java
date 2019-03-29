@@ -12,11 +12,13 @@ public class JeggleGame extends Application {
     private static final Logger LOG = LogManager.getLogger( JeggleGame.class );
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage) {
 
         GameManager.getInstance().initializeGame(primaryStage);
 
         FiniteStateMachine stateMachine = new FiniteStateMachine("main.java.core.state");
+        stateMachine.init();
+
     }
 
 

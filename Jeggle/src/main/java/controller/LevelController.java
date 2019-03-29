@@ -9,18 +9,24 @@ import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.CacheHint;
 import javafx.scene.paint.Color;
-import main.core.ConfigurationLoader;
-import main.core.level.Level;
+import javafx.scene.shape.Circle;
+import main.java.core.ConfigurationLoader;
 import main.java.core.level.LevelEvent;
 import main.java.core.level.LevelEventListener;
+import main.java.core.peg.Peg;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
-public class JeggleController extends Controller {
-    private static final Logger LOG = LogManager.getLogger( JeggleController.class );
+import static main.java.core.util.AimResolver.X_SHOOTING_POINT;
+import static main.java.core.util.AimResolver.Y_SHOOTING_POINT;
+
+public class LevelController extends Controller {
+    private static final Logger LOG = LogManager.getLogger( LevelController.class );
 
     PhysicsCircle ball;
 
@@ -36,12 +42,11 @@ public class JeggleController extends Controller {
         world.setGravityX(ConfigurationLoader.gravityX);
         world.setGravityY(ConfigurationLoader.gravityY);
 
-        Level.getPegs().stream().forEach( peg -> {
-            world.getChildren().add(peg);
-        });
     }
 
     private double prevVelocity = 0.0;
+
+    private List<Peg> pegs;
 
     private List<LevelEventListener> levelListeners = new CopyOnWriteArrayList<>();
 
@@ -61,6 +66,53 @@ public class JeggleController extends Controller {
 
     }
 
+    public void initializeLevel(List<Peg> pegs) {
+        this.pegs = pegs;
+
+        Platform.runLater(()->{
+            pegs.forEach( p -> {
+                world.getChildren().add(p);
+            });
+        });
+    }
+
+    public void prepareOrangePegs() {
+        Collections.shuffle(pegs);
+
+        Platform.runLater(()->{
+            pegs.stream().limit(10).forEach( p -> {
+                p.setType(Peg.Type.ORANGE);
+            });
+        });
+    }
+
+    public void preparePinkPegs() {
+        Collections.shuffle(pegs);
+
+        Platform.runLater(()->{
+            pegs.stream().filter(p -> p.getType().equals(Peg.Type.PINK)).findFirst().ifPresent(p -> p.setType(Peg.Type.BLUE));
+
+            pegs.stream().filter(p -> p.getType().equals(Peg.Type.BLUE) && p.getCycle().equals(Peg.Cycle.SHOWN)).findFirst().ifPresent(p -> p.setType(Peg.Type.PINK));
+        });
+    }
+
+    public void showPegs() {
+        Platform.runLater(() -> {
+            pegs.forEach( p -> {
+                p.show();
+            });
+        });
+    }
+
+    public void removeHighlighted() {
+        Platform.runLater(() -> {
+            pegs.stream().filter(p -> p.getCycle().equals(Peg.Cycle.HIGHLIGHTED)).forEach(p -> {
+                p.hide();
+                world.getChildren().remove(p);
+            });
+        });
+    }
+
     public void shootBall(double velX, double velY) {
         ball = new PhysicsCircle();
 
@@ -68,14 +120,13 @@ public class JeggleController extends Controller {
         ball.setCacheHint(CacheHint.SPEED);
 
         ball.setSimulationType(SimulationType.Full);
-        ball.setLayoutX(160);
-        ball.setLayoutY(40);
+        ball.setLayoutX(X_SHOOTING_POINT);
+        ball.setLayoutY(Y_SHOOTING_POINT);
         ball.setRadius(8);
         ball.setFill(Color.BLACK);
 
         ball.setLinearVelocityX(velX);
         ball.setLinearVelocityY(velY);
-
 
         ball.setRestitution(ConfigurationLoader.restitution);
         ball.setFriction(ConfigurationLoader.friction);
@@ -85,12 +136,34 @@ public class JeggleController extends Controller {
         ball.setFixedRotation(true);
         ball.setGravityScale(ConfigurationLoader.gravityScale);
 
-        world.getChildren().add(ball);
+        Platform.runLater(()->{
+            world.getChildren().add(ball);
+        });
+    }
+
+    public void drawPoint(double x, double y) {
+        Circle point = new Circle(x + X_SHOOTING_POINT, y + Y_SHOOTING_POINT, 3);
+        point.setFill(Color.GREEN);
+
+        Platform.runLater(()->{
+            world.getChildren().add(point);
+        });
     }
 
     @FXML
     private void handleCollision(CollisionEvent event) {
 
+        if (event.getObject1() == ball || event.getObject2() == ball) {
+            if (event.getObject1() instanceof Peg) {
+                Platform.runLater(()->{
+                    ((Peg) event.getObject1()).highlight();
+                });
+            } else if (event.getObject2() instanceof Peg) {
+                Platform.runLater(()->{
+                    ((Peg) event.getObject2()).highlight();
+                });
+            }
+        }
 
         if (event.getObject1() == ball || event.getObject2() == ball ) {
             if (event.getObject1() == sensor || event.getObject2() == sensor) {

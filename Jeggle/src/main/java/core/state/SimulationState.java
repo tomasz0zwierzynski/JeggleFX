@@ -1,8 +1,7 @@
 package main.java.core.state;
 
 import javafx.scene.layout.Region;
-import main.java.controller.JeggleController;
-import main.java.core.GameManager;
+import main.java.controller.LevelController;
 import main.java.core.fsm.StateContext;
 import main.java.core.fsm.StateMachine;
 import main.java.core.fsm.annotation.OnEntry;
@@ -23,18 +22,18 @@ public class SimulationState extends AbstractState {
         super(machine, data);
     }
 
-    ViewController<Region, JeggleController> level;
+    ViewController<Region, LevelController> level;
 
-    @OnEntry public void onEntry() {
-        LOG.debug("simulationState: onEntry()");
+    @OnEntry
+    public void onEntry() {
 
-        level = (ViewController<Region, JeggleController>) context.get("Level");
+        level = (ViewController<Region, LevelController>) context.get(StateContext.LEVEL_CONTEXT_KEY);
         level.getController().addLevelEventListener(listener);
 
     }
 
-    @OnExit public void onExit() {
-        LOG.debug("simulationState: onExit()");
+    @OnExit
+    public void onExit() {
 
         if (level != null) {
             level.getController().removeLevelEventListener(listener);
