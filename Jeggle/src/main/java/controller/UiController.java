@@ -8,11 +8,13 @@ import javafx.scene.Node;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Region;
+import javafx.scene.layout.StackPane;
 
 public class UiController extends Controller {
 
     @FXML private Region region;
     @FXML private BorderPane border;
+    @FXML private StackPane mainPane;
 
     public void setBallotron(Node ballotron) {
         border.setLeft(ballotron);
@@ -25,6 +27,10 @@ public class UiController extends Controller {
     public void setLevel(Region level) {
         region = level;
         border.setCenter(region);
+    }
+
+    public void addOverlayingNode(Node node) {
+        mainPane.getChildren().add(node);
     }
 
     public void addRegionListener(EventType<MouseEvent> eventType, EventHandler<MouseEvent> handler) {

@@ -5,9 +5,11 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.layout.Region;
 import main.java.controller.BallotronController;
+import main.java.controller.ConsoleController;
 import main.java.controller.LevelController;
 import main.java.controller.UiController;
 import main.java.core.GameManager;
+import main.java.core.debug.ConsoleManager;
 import main.java.core.fsm.StateContext;
 import main.java.core.fsm.StateMachine;
 import main.java.core.fsm.annotation.OnEntry;
@@ -21,6 +23,8 @@ import main.java.core.util.Path;
 import main.java.core.util.ViewController;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import java.io.Console;
 
 @State(value = "init", initial = true)
 @TransitionSource(target = "aim", event = "aimEvent")
@@ -53,6 +57,11 @@ public class LevelInitState extends AbstractState {
 
         context.put(StateContext.LEVEL_CONTEXT_KEY, level);
 
+        ViewController<Node, ConsoleController> console = FxmlLoader.loadViewController(Node.class, ConsoleController.class, Path.Ui.CONSOLE);
+        ConsoleManager.getInstance().init(console);
+
+        // ui.getController().addOverlayingNode(console.getView());
+
         GameManager.getInstance().showStage(new Scene(ui.getView()));
 
         GameManager.getInstance().setLevel(level.getView());
@@ -60,6 +69,8 @@ public class LevelInitState extends AbstractState {
         GameManager.getInstance().createGame();
 
         GameManager.getInstance().startGame();
+
+        // ConsoleManager.getInstance().println("HELLO WORLD!");
 
         try {
             Thread.sleep(1000);

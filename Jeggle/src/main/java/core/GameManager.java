@@ -35,7 +35,7 @@ public class GameManager {
         Scene loadingScene = new Scene(vBox);
         stage.setScene(loadingScene);
         stage.setTitle("Loading...");
-        Platform.runLater(()->{
+        Platform.runLater(() -> {
             stage.show();
         });
     }

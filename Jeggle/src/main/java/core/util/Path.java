@@ -10,6 +10,7 @@ public class Path {
         public static final String UI = "/ui/ui.fxml";
         public static final String BALLOTRON = "/ui/ballotron.fxml";
         public static final String FEVERMETER = "/ui/fevermeter.fxml";
+        public static final String CONSOLE = "/ui/console.fxml";
     }
 
 }

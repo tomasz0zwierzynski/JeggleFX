@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.java.controller.ConsoleController">
+   <children>
+      <TextField fx:id="textField" opacity="0.7" VBox.vgrow="NEVER">
+         <font>
+            <Font name="Consolas" size="12.0" />
+         </font>
+      </TextField>
+   </children>
+</VBox>

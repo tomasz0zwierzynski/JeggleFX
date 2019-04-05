@@ -87,6 +87,7 @@ public class FiniteStateMachine implements StateMachine {
                 try {
                     method.invoke(currentState);
                 } catch (IllegalAccessException | InvocationTargetException e) {
+                    e.printStackTrace();
                     throw new AnnotationException("OnExit method invoking exception");
                 }
             }
