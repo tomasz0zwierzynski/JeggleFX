@@ -8,6 +8,7 @@ import main.java.core.util.ViewController;
 
 import java.io.IOException;
 
+@Deprecated
 public class FxmlLoader {
 
     public static ViewController<Region, Controller> loadViewController(String path) {

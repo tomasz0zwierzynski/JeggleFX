@@ -28,18 +28,19 @@ public class GameManager {
 
     public void initializeGame(Stage primaryStage) {
         stage = primaryStage;
-        stage.setTitle("Jeggle");
+        // stage.setTitle("Jeggle");
 
-        VBox vBox = new VBox();
-        vBox.getChildren().add(new Label("Loading..."));
-        Scene loadingScene = new Scene(vBox);
-        stage.setScene(loadingScene);
-        stage.setTitle("Loading...");
-        Platform.runLater(() -> {
-            stage.show();
-        });
+//        VBox vBox = new VBox();
+//        vBox.getChildren().add(new Label("Loading..."));
+//        Scene loadingScene = new Scene(vBox);
+//        stage.setScene(loadingScene);
+//        stage.setTitle("Loading...");
+//        Platform.runLater(() -> {
+//            stage.show();
+//        });
     }
 
+    @Deprecated
     public void showStage(Scene scene) {
         if (stage != null) {
             Platform.runLater(()->{
@@ -49,16 +50,19 @@ public class GameManager {
         }
     }
 
+    @Deprecated
     public void setLevel(Region root) {
         region = root;
     }
 
+    @Deprecated
     public void createGame() {
         Platform.runLater(()->{
             physicsGame = new PhysicsGame();
         });
     }
 
+    @Deprecated
     public void startGame() {
         Platform.runLater(()->{
             physicsGame.load(region);
@@ -66,12 +70,14 @@ public class GameManager {
         });
     }
 
+    @Deprecated
     public void pauseGame() {
         Platform.runLater(()->{
             physicsGame.pauseGame();
         });
     }
 
+    @Deprecated
     public void stopGame() {
         Platform.runLater(()->{
             physicsGame.stopGame();

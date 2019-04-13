@@ -1,4 +1,4 @@
-package main.core;
+package main.java.core;
 
 import framework.SimulationType;
 import framework.nodes.PhysicsCircle;

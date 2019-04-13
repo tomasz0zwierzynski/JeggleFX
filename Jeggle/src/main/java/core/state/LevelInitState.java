@@ -26,7 +26,7 @@ import org.apache.logging.log4j.Logger;
 
 import java.io.Console;
 
-@State(value = "init", initial = true)
+@State(value = "init")
 @TransitionSource(target = "aim", event = "aimEvent")
 public class LevelInitState extends AbstractState {
     private static final Logger LOG = LogManager.getLogger( LevelInitState.class );

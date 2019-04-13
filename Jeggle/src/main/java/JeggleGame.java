@@ -18,7 +18,6 @@ public class JeggleGame extends Application {
 
         FiniteStateMachine stateMachine = new FiniteStateMachine("main.java.core.state");
         stateMachine.init();
-
     }
 
 
